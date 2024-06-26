@@ -1,5 +1,4 @@
 import numpy as np
-
 from htm.bindings.sdr import SDR
 from htm.algorithms import TemporalMemory as TM
 
