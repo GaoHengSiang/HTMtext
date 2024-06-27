@@ -1,3 +1,4 @@
 tokenizers
 datasets
 transformers
+tqdm

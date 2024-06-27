@@ -5,6 +5,7 @@ from transformers import BertTokenizer
 import numpy as np
 from htm.bindings.sdr import SDR
 from htm.algorithms import TemporalMemory as TM
+from tqdm import tqdm
 
 #settings--------------------------------------------
 vocab_size = 10000
@@ -13,7 +14,7 @@ arraySize = vocab_size
 inputSDR = SDR( arraySize )
 
 tm = TM(columnDimensions          = (inputSDR.size,),
-        cellsPerColumn            = 10,                 # default: 32
+        cellsPerColumn            = 32,                 # default: 32
         minThreshold              = 1,                  # default: 10
         activationThreshold       = 1,                  # default: 13
         initialPermanence         = 0.4,                # default: 0.21
@@ -37,27 +38,29 @@ tm = TM(columnDimensions          = (inputSDR.size,),
 #acquire data----------------------------------------
 dataset = load_dataset("wikitext", name="wikitext-2-raw-v1", split="train")
 
-#display
-#print(dataset)
-#print(dataset[1])
-#print(dataset[4])
+#slice small portion
+#dataset = dataset.select(range(10))
+
 #acquire tokenizer-----------------------------------
 custom_tokenizer = Tokenizer.from_file("my-new-tokenizer.json") #self trained
 #training tokenizers is quick (<30s)
 
 
 for cycle in range(3):
-    print('CURRENTLY IN CYCLE = ', cycle+1, "==================================")
-    for i in range(1): # in dataset:
+    #print('CURRENTLY IN CYCLE = ', cycle+1, "==================================")
+    description = f'Processing sentences, cycle = {str(cycle+1)}'
+    for sentence in tqdm(dataset, desc=description):
         #tokenize sentences----------------------------------
-        sequence = "Using a Transformer network is simple" #dummy
+        #sequence = "Using a Transformer network is simple" #dummy
         #should use wikitext
-
+        #print(sentence['text'])
+        sequence = str(sentence)
+        
         encodings = custom_tokenizer.encode(sequence) #--> sentence
-        print(encodings.tokens) #display
+        #print(encodings.tokens) #display
 
         id_seq = (encodings.ids)
-        print(id_seq)#display
+        #print(id_seq)#display
 
         for id in id_seq:
             #encode to SDR---------------------------------------
@@ -71,20 +74,30 @@ for cycle in range(3):
 
             #pass into TM----------------------------------------
             tm.compute(inputSDR, learn = True)
-            #print the active cell idss
-            active_cell_ids = tm.cellsToColumns(tm.getActiveCells()).sparse
-            print('active cells = ', active_cell_ids)
-            decoded_string = custom_tokenizer.decode(active_cell_ids)
-            print('current token: ', decoded_string) #print the current processing token
+            #print the active cell ids --------------------------
+            # active_cell_ids = tm.cellsToColumns(tm.getActiveCells()).sparse
+            # print('active cells = ', active_cell_ids)
+            # decoded_string = custom_tokenizer.decode(active_cell_ids)
+            # print('current token: ', decoded_string) #print the current processing token
             
-            tm.activateDendrites(True) #necessary, call before getPredictiveCells
-            #print/acquire the predicted cell ids
-            predicted_cell_ids = tm.cellsToColumns(tm.getPredictiveCells()).sparse
-            decoded_string = custom_tokenizer.decode(predicted_cell_ids)
-            print('predicted next token: ', decoded_string) #print the current processing token
-#save trained model
-tm.saveToFile("trained_HTM.json", "JSON")
+            # tm.activateDendrites(True) #necessary, call before getPredictiveCells
+            # #print/acquire the predicted cell ids
+            # predicted_cell_ids = tm.cellsToColumns(tm.getPredictiveCells()).sparse
+            # decoded_string = custom_tokenizer.decode(predicted_cell_ids)
+            # print('predicted next token: ', decoded_string) #print the current processing token
 
+#save trained model
+# File to save the TemporalMemory state
+filename = 'trained_HTM'
+format = 'BINARY'  # Can be 'BINARY', 'PORTABLE', 'JSON', or 'XML'
+#Only use BINARY to avoid load error
+
+# Save the TemporalMemory state to a file
+try:
+    tm.saveToFile(filename, format)
+    print(f"TemporalMemory state saved to {filename} in {format} format.")
+except Exception as e:
+    print("Error during save:", e)
 
 #get user input--------------------------------------
 
