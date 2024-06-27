@@ -65,4 +65,4 @@ print(encoding.tokens)
 print(encoding.type_ids)
 
 #save pre-trained-------------------------------------------------------------------
-custom_tokenizer.save("my-new-tokenizer")
+custom_tokenizer.save("my-new-tokenizer.json")
