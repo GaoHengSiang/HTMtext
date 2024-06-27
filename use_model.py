@@ -13,7 +13,7 @@ arraySize = vocab_size
 inputSDR = SDR( arraySize )
 
 #load HTM model--------------------------------------
-tm = TM.loadFromFile("trained_HTM.json")
+tm = TM.loadFromFile("trained_HTM.json", 'JSON')
 
 #acquire tokenizer-----------------------------------
 custom_tokenizer = Tokenizer.from_file("my-new-tokenizer.json") #self trained
