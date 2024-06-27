@@ -12,52 +12,28 @@ batch_size = 1000
 arraySize = vocab_size
 inputSDR = SDR( arraySize )
 
-tm = TM(columnDimensions          = (inputSDR.size,),
-        cellsPerColumn            = 10,                 # default: 32
-        minThreshold              = 1,                  # default: 10
-        activationThreshold       = 1,                  # default: 13
-        initialPermanence         = 0.4,                # default: 0.21
-        connectedPermanence       = 0.5,                # default: 0.5
-        permanenceIncrement       = 0.1,                # default: 0.1
-        permanenceDecrement       = 0.1,                # default: 0.1 
-        predictedSegmentDecrement = 0.0,                # default: 0.0  --> #set to 0.05?
-        maxSegmentsPerCell        = 1,                  # default: 255
-        maxSynapsesPerSegment     = 1                   # default: 255
-        )
+#load HTM model--------------------------------------
+tm = TM.loadFromFile("trained_HTM.json")
 
-#functions-------------------------------------------
-# def formatSdr(sdr):
-#   result = ''
-#   for i in range(sdr.size):
-#     if i > 0 and i % 8 == 0:
-#       result += ' '
-#     result += str(sdr.dense.flatten()[i])
-#   return result
-
-#acquire data----------------------------------------
-dataset = load_dataset("wikitext", name="wikitext-2-raw-v1", split="train")
-
-#display
-#print(dataset)
-#print(dataset[1])
-#print(dataset[4])
 #acquire tokenizer-----------------------------------
 custom_tokenizer = Tokenizer.from_file("my-new-tokenizer.json") #self trained
 #training tokenizers is quick (<30s)
 
 
-for cycle in range(3):
-    print('CURRENTLY IN CYCLE = ', cycle+1, "==================================")
+for cycle in range(10):
+    #get user input--------------------------------------
+    # Asking for user input
+    user_input = input("Please enter something: ")
+
     for i in range(1): # in dataset:
         #tokenize sentences----------------------------------
-        sequence = "Using a Transformer network is simple" #dummy
+        sequence = user_input #user input is string type
         #should use wikitext
 
         encodings = custom_tokenizer.encode(sequence) #--> sentence
-        print(encodings.tokens) #display
+        print('user input: ', encodings.tokens, encodings.ids) #display
 
         id_seq = (encodings.ids)
-        print(id_seq)#display
 
         for id in id_seq:
             #encode to SDR---------------------------------------
@@ -82,18 +58,9 @@ for cycle in range(3):
             predicted_cell_ids = tm.cellsToColumns(tm.getPredictiveCells()).sparse
             decoded_string = custom_tokenizer.decode(predicted_cell_ids)
             print('predicted next token: ', decoded_string) #print the current processing token
-#save trained model
-tm.saveToFile("trained_HTM.json")
-
-
-#get user input--------------------------------------
-
-
-#pass into TM and get prediction---------------------
 
 
 #pass prediction into TM-----------------------------
 
 
 #decode and print prediction-------------------------
-
