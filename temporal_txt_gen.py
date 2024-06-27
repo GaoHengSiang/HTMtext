@@ -38,21 +38,21 @@ tm = TM(columnDimensions          = (inputSDR.size,),
 dataset = load_dataset("wikitext", name="wikitext-2-raw-v1", split="train")
 
 #display
-print(dataset)
-print(dataset[1])
-print(dataset[4])
+#print(dataset)
+#print(dataset[1])
+#print(dataset[4])
 #acquire tokenizer-----------------------------------
 custom_tokenizer = Tokenizer.from_file("my-new-tokenizer.json") #self trained
 #training tokenizers is quick (<30s)
 
 
-for cycle in range(2):
+for cycle in range(10):
     for i in range(1): # in dataset:
         #tokenize sentences----------------------------------
         sequence = "Using a Transformer network is simple" #dummy
         #should use wikitext
 
-        encodings = custom_tokenizer.encoding(sequence) #--> sentence
+        encodings = custom_tokenizer.encode(sequence) #--> sentence
         print(encodings.tokens) #display
 
         id_seq = (encodings.ids)
@@ -70,17 +70,16 @@ for cycle in range(2):
 
             #pass into TM----------------------------------------
             tm.compute(inputSDR, learn = True)
-            #print the active cell ids
-            active_cells = np.zeros(arraySize)
-            active_cells = tm.getActiveCells()
-            decoded_string = custom_tokenizer.decode(np.nonzero(active_cells))
+            #print the active cell idss
+            active_cell_ids = tm.cellsToColumns(tm.getActiveCells()).sparse
+            print('active cells = ', active_cell_ids)
+            decoded_string = custom_tokenizer.decode(active_cell_ids)
             print('current token: ', decoded_string) #print the current processing token
             
-            tm.activateDendrites(True)
+            tm.activateDendrites(True) #necessary, call before getPredictiveCells
             #print/acquire the predicted cell ids
-            predicted_cells = np.zeros(arraySize)
-            predicted_cells = tm.getPredictiveCells()
-            decoded_string = custom_tokenizer.decode(np.nonzero(active_cells))
+            predicted_cell_ids = tm.cellsToColumns(tm.getPredictiveCells()).sparse
+            decoded_string = custom_tokenizer.decode(predicted_cell_ids)
             print('predicted next token: ', decoded_string) #print the current processing token
 
 #get user input--------------------------------------
