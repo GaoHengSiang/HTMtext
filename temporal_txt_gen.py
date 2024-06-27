@@ -52,11 +52,11 @@ for cycle in range(2):
         sequence = "Using a Transformer network is simple" #dummy
         #should use wikitext
 
-        tokens = custom_tokenizer.tokenize(sequence) #--> sentence
-        #print(tokens) #display
+        encodings = custom_tokenizer.encoding(sequence) #--> sentence
+        print(encodings.tokens) #display
 
-        id_seq = custom_tokenizer.convert_tokens_to_ids(tokens)
-        #print(id_seq)#display
+        id_seq = (encodings.ids)
+        print(id_seq)#display
 
         for id in id_seq:
             #encode to SDR---------------------------------------
@@ -73,14 +73,14 @@ for cycle in range(2):
             #print the active cell ids
             active_cells = np.zeros(arraySize)
             active_cells = tm.getActiveCells()
-            decoded_string = tokenizer.decode(np.nonzero(active_cells))
+            decoded_string = custom_tokenizer.decode(np.nonzero(active_cells))
             print('current token: ', decoded_string) #print the current processing token
             
             tm.activateDendrites(True)
             #print/acquire the predicted cell ids
             predicted_cells = np.zeros(arraySize)
             predicted_cells = tm.getPredictiveCells()
-            decoded_string = tokenizer.decode(np.nonzero(active_cells))
+            decoded_string = custom_tokenizer.decode(np.nonzero(active_cells))
             print('predicted next token: ', decoded_string) #print the current processing token
 
 #get user input--------------------------------------
