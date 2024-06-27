@@ -83,7 +83,7 @@ for cycle in range(3):
             decoded_string = custom_tokenizer.decode(predicted_cell_ids)
             print('predicted next token: ', decoded_string) #print the current processing token
 #save trained model
-tm.saveToFile("trained_HTM.json", 'JSON')
+tm.saveToFile("trained_HTM.json", "JSON")
 
 
 #get user input--------------------------------------
