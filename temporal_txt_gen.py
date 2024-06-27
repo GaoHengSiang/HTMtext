@@ -42,7 +42,7 @@ print(dataset)
 print(dataset[1])
 print(dataset[4])
 #acquire tokenizer-----------------------------------
-tokenizer = Tokenizer.from_file("my-new-tokenizer") #self trained
+custom_tokenizer = Tokenizer.from_file("my-new-tokenizer.json") #self trained
 #training tokenizers is quick (<30s)
 
 
@@ -52,10 +52,10 @@ for cycle in range(2):
         sequence = "Using a Transformer network is simple" #dummy
         #should use wikitext
 
-        tokens = tokenizer.tokenize(sequence) #--> sentence
+        tokens = custom_tokenizer.tokenize(sequence) #--> sentence
         #print(tokens) #display
 
-        id_seq = tokenizer.convert_tokens_to_ids(tokens)
+        id_seq = custom_tokenizer.convert_tokens_to_ids(tokens)
         #print(id_seq)#display
 
         for id in id_seq:
