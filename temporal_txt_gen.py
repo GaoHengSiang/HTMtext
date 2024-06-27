@@ -11,21 +11,16 @@ vocab_size = 10000
 batch_size = 1000
 arraySize = vocab_size
 inputSDR = SDR( arraySize )
-tm = TM(columnDimensions = (inputSDR.size,),
-        cellsPerColumn=10,       # default: 32
-        minThreshold=4,         # default: 10
-        activationThreshold=8,  # default: 13
-        initialPermanence=0.5,  # default: 0.21
-        )
+
 tm = TM(columnDimensions          = (inputSDR.size,),
-        cellsPerColumn            = 10,     # default: 32
+        cellsPerColumn            = 10,                 # default: 32
         minThreshold              = 1,                  # default: 10
         activationThreshold       = 1,                  # default: 13
         initialPermanence         = 0.4,                # default: 0.21
         connectedPermanence       = 0.5,                # default: 0.5
         permanenceIncrement       = 0.1,                # default: 0.1
         permanenceDecrement       = 0.1,                # default: 0.1 
-        predictedSegmentDecrement = 0.0,                # default: 0.0
+        predictedSegmentDecrement = 0.0,                # default: 0.0  --> #set to 0.05?
         maxSegmentsPerCell        = 1,                  # default: 255
         maxSynapsesPerSegment     = 1                   # default: 255
         )
@@ -52,12 +47,12 @@ tokenizer = Tokenizer.from_file("my-new-tokenizer") #self trained
 
 
 for cycle in range(2):
-    for sentence in dataset:
+    for i in range(1): # in dataset:
         #tokenize sentences----------------------------------
         sequence = "Using a Transformer network is simple" #dummy
         #should use wikitext
 
-        tokens = tokenizer.tokenize(sequence)
+        tokens = tokenizer.tokenize(sequence) #--> sentence
         #print(tokens) #display
 
         id_seq = tokenizer.convert_tokens_to_ids(tokens)
@@ -71,13 +66,22 @@ for cycle in range(2):
             #ideally words with close relationships should have some overlap or such
 
             inputSDR.dense = sensorValueBits
+            #inputSDR.sparse = id #shorter code
 
             #pass into TM----------------------------------------
             tm.compute(inputSDR, learn = True)
             #print the active cell ids
-
+            active_cells = np.zeros(arraySize)
+            active_cells = tm.getActiveCells()
+            decoded_string = tokenizer.decode(np.nonzero(active_cells))
+            print('current token: ', decoded_string) #print the current processing token
+            
             tm.activateDendrites(True)
             #print/acquire the predicted cell ids
+            predicted_cells = np.zeros(arraySize)
+            predicted_cells = tm.getPredictiveCells()
+            decoded_string = tokenizer.decode(np.nonzero(active_cells))
+            print('predicted next token: ', decoded_string) #print the current processing token
 
 #get user input--------------------------------------
 
