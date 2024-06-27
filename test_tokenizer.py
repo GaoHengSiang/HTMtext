@@ -6,8 +6,8 @@ custom_tokenizer = Tokenizer.from_file("my-new-tokenizer.json")
 
 sequence = "Using a Transformer network is simple" #dummy
 
-tokens = custom_tokenizer.encode(sequence) #--> sentence
-print(tokens) #display
+output = custom_tokenizer.encode(sequence) #--> sentence
+print(output.tokens) #display
 
-id_seq = custom_tokenizer.convert_tokens_to_ids(tokens)
-print(id_seq)#display
+#id_seq = custom_tokenizer.convert_tokens_to_ids(tokens)
+print(output.ids)#display
